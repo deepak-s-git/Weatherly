@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real-Time Weather App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="weatherBg">
+    <div class="container">
+      <input type="text" id="cityInput" placeholder="Enter city" />
+      <button onclick="getWeatherByCity()">Search</button>
+
+      <div class="current-weather">
+        <h1 id="cityName"></h1>
+        <h2 id="temperature"></h2>
+        <p id="condition"></p>
+        <p id="feelsLike"></p>
+        <p id="highLow"></p>
+      </div>
+
+      <div class="details-panel">
+        <p><strong>Humidity:</strong> <span id="humidity"></span></p>
+        <p><strong>Wind:</strong> <span id="wind"></span></p>
+        <p><strong>Visibility:</strong> <span id="visibility"></span></p>
+        <p><strong>Pressure:</strong> <span id="pressure"></span></p>
+      </div>
+
+      <div class="forecast-section">
+        <h3>Hourly Forecast</h3>
+        <div id="hourlyForecast" class="forecast-scroll"></div>
+
+        <h3>Weekly Forecast</h3>
+        <div id="weeklyForecast" class="forecast-scroll-vertical"></div>
+      </div>
+
+      <div class="air-quality">
+        <h3>Air Quality</h3>
+        <p><strong>AQI:</strong> <span id="aqi"></span></p>
+        <p><strong>PM2.5:</strong> <span id="pm25"></span></p>
+        <p><strong>PM10:</strong> <span id="pm10"></span></p>
+        <p><strong>CO:</strong> <span id="co"></span></p>
+        <p><strong>SO2:</strong> <span id="so2"></span></p>
+      </div>
+
+      <div class="sunrise-sunset">
+        <h3>Sunrise & Sunset</h3>
+        <p><strong>Sunrise:</strong> <span id="sunrise"></span></p>
+        <p><strong>Sunset:</strong> <span id="sunset"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
