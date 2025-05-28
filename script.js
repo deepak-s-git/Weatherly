@@ -1,27 +1,31 @@
-const apiKey = 'ebbec3fe6c8aba81ed0b421a0bafc1ab'; // Replace with your OpenWeatherMap API key
+const apiKey = 'YOUR_API_KEY_HERE'; // Replace with your OpenWeatherMap API key
 
-function getWeatherByCity() {
+async function getWeatherByCity() {
   const city = document.getElementById('cityInput').value.trim();
   if (!city) return alert('Please enter a city name');
-  fetchWeather(city);
+  await fetchWeather(city);
 }
 
 async function fetchWeather(city) {
   try {
-    const res = await fetch(
+    const weatherRes = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`
     );
-    const data = await res.json();
+    const weatherData = await weatherRes.json();
 
-    if (data.cod !== 200) {
+    if (weatherData.cod !== 200) {
       alert('City not found');
       return;
     }
 
-    updateWeatherUI(data);
-    fetchForecast(data.coord.lat, data.coord.lon);
+    updateWeatherUI(weatherData);
+
+    // Fetch forecast & air quality by lat/lon
+    const { lat, lon } = weatherData.coord;
+    await fetchForecast(lat, lon);
+    await fetchAirQuality(lat, lon);
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching weather:', error);
   }
 }
 
@@ -42,27 +46,26 @@ function updateWeatherUI(data) {
   document.getElementById('sunrise').textContent = sunrise;
   document.getElementById('sunset').textContent = sunset;
 
-  // Show the current weather card with fade-in effect
+  // Show current weather card with fade-in
   const currentWeather = document.getElementById('currentWeather');
   currentWeather.classList.add('fade-in');
   currentWeather.style.opacity = 1;
 
-  // Change background based on weather
+  // Set dynamic background based on weather
   setBackground(data.weather[0].main);
 }
 
 async function fetchForecast(lat, lon) {
   try {
-    const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,alerts&appid=${apiKey}&units=metric`
+    const forecastRes = await fetch(
+      `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,alerts,current&appid=${apiKey}&units=metric`
     );
-    const data = await res.json();
+    const forecastData = await forecastRes.json();
 
-    updateHourlyForecast(data.hourly.slice(0, 12));
-    updateWeeklyForecast(data.daily.slice(0, 7));
-    updateAQI(data);
+    updateHourlyForecast(forecastData.hourly.slice(0, 12));
+    updateWeeklyForecast(forecastData.daily.slice(0, 7));
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching forecast:', error);
   }
 }
 
@@ -72,12 +75,13 @@ function updateHourlyForecast(hourly) {
   hourly.forEach(hour => {
     const time = new Date(hour.dt * 1000).getHours();
     const hourDiv = document.createElement('div');
-    hourDiv.className = 'glass min-w-[100px] text-center p-3 rounded-xl flex flex-col items-center';
+    hourDiv.className =
+      'glass min-w-[100px] text-center p-3 rounded-xl flex flex-col items-center transition-transform duration-300 hover:scale-110 hover:shadow-lg cursor-pointer';
     hourDiv.innerHTML = `
       <p class="text-sm">${time}:00</p>
       <img src="https://openweathermap.org/img/wn/${hour.weather[0].icon}@2x.png" alt="${hour.weather[0].description}" class="w-12 h-12" />
       <p class="text-md font-semibold">${Math.round(hour.temp)}°C</p>
-      <p class="text-xs mt-1">Wind: ${hour.wind_speed} m/s ${degToCompass(hour.wind_deg)}</p>
+      <p class="text-xs mt-1">Wind: ${hour.wind_speed.toFixed(1)} m/s ${degToCompass(hour.wind_deg)}</p>
       <p class="text-xs">UV: ${hour.uvi.toFixed(1)}</p>
     `;
     container.appendChild(hourDiv);
@@ -91,7 +95,8 @@ function updateWeeklyForecast(daily) {
     const date = new Date(day.dt * 1000);
     const weekday = date.toLocaleDateString(undefined, { weekday: 'short' });
     const dayDiv = document.createElement('div');
-    dayDiv.className = 'glass text-center p-4 rounded-xl';
+    dayDiv.className =
+      'glass text-center p-4 rounded-xl transition-transform duration-300 hover:scale-105 hover:shadow-lg cursor-pointer';
     dayDiv.innerHTML = `
       <p class="text-sm">${weekday}</p>
       <img src="https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png" alt="${day.weather[0].description}" class="w-12 h-12 mx-auto" />
@@ -102,48 +107,133 @@ function updateWeeklyForecast(daily) {
   });
 }
 
-function updateAQI(data) {
-  // OpenWeatherMap OneCall API doesn't provide AQI directly here
-  // So for demo, we will show UV Index as AQI and '-' for pollutants
-  document.getElementById('aqi').textContent = data.current.uvi.toFixed(1);
-  document.getElementById('pm25').textContent = '-';
-  document.getElementById('pm10').textContent = '-';
-  document.getElementById('co').textContent = '-';
-  document.getElementById('so2').textContent = '-';
+// Fetch air quality info separately
+async function fetchAirQuality(lat, lon) {
+  try {
+    const aqiRes = await fetch(
+      `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`
+    );
+    const aqiData = await aqiRes.json();
+
+    if (!aqiData.list || !aqiData.list.length) {
+      console.warn('No AQI data available');
+      return;
+    }
+
+    const aqi = aqiData.list[0];
+    const aqiIndex = aqi.main.aqi;
+
+    document.getElementById('aqi').textContent = aqiIndexToText(aqiIndex);
+    document.getElementById('pm25').textContent = aqi.components.pm2_5 + ' µg/m³';
+    document.getElementById('pm10').textContent = aqi.components.pm10 + ' µg/m³';
+    document.getElementById('co').textContent = aqi.components.co + ' µg/m³';
+    document.getElementById('so2').textContent = aqi.components.so2 + ' µg/m³';
+
+    // Set AQI color (background) dynamically
+    const aqiBox = document.getElementById('aqi').parentElement;
+    aqiBox.style.color = aqiColor(aqiIndex);
+  } catch (error) {
+    console.error('Error fetching air quality:', error);
+  }
+}
+
+function aqiIndexToText(aqi) {
+  switch (aqi) {
+    case 1:
+      return 'Good';
+    case 2:
+      return 'Fair';
+    case 3:
+      return 'Moderate';
+    case 4:
+      return 'Poor';
+    case 5:
+      return 'Very Poor';
+    default:
+      return 'Unknown';
+  }
+}
+
+function aqiColor(aqi) {
+  switch (aqi) {
+    case 1:
+      return '#10B981'; // Green
+    case 2:
+      return '#FBBF24'; // Yellow
+    case 3:
+      return '#F97316'; // Orange
+    case 4:
+      return '#EF4444'; // Red
+    case 5:
+      return '#B91C1C'; // Dark Red
+    default:
+      return '#9CA3AF'; // Gray
+  }
 }
 
 function degToCompass(num) {
   const val = Math.floor((num / 22.5) + 0.5);
-  const arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
-    "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+  const arr = [
+    "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+    "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"
+  ];
   return arr[(val % 16)];
 }
 
 function setBackground(weatherMain) {
   const body = document.body;
-  // Simple background sets for demo, can be expanded with animations or Lottie later
+  body.style.transition = 'background 1s ease-in-out';
+
   switch (weatherMain.toLowerCase()) {
     case 'clear':
-      body.style.background = 'linear-gradient(to bottom right, #fceabb, #f8b500)'; // bright sunny yellow
+      body.style.background = 'linear-gradient(to bottom right, #fceabb, #f8b500)';
       break;
     case 'clouds':
-      body.style.background = 'linear-gradient(to bottom right, #667eea, #764ba2)'; // moody purple-blue
+      body.style.background = 'linear-gradient(to bottom right, #667eea, #764ba2)';
       break;
     case 'rain':
     case 'drizzle':
-      body.style.background = 'linear-gradient(to bottom right, #3a7bd5, #3a6073)'; // blue rain
+      body.style.background = 'linear-gradient(to bottom right, #3a7bd5, #3a6073)';
       break;
     case 'thunderstorm':
-      body.style.background = 'linear-gradient(to bottom right, #0f2027, #203a43, #2c5364)'; // dark stormy
+      body.style.background = 'linear-gradient(to bottom right, #0f2027, #203a43, #2c5364)';
       break;
     case 'snow':
-      body.style.background = 'linear-gradient(to bottom right, #83a4d4, #b6fbff)'; // icy light blue
+      body.style.background = 'linear-gradient(to bottom right, #83a4d4, #b6fbff)';
       break;
     case 'mist':
     case 'fog':
-      body.style.background = 'linear-gradient(to bottom right, #606c88, #3f4c6b)'; // foggy gray
+    case 'haze':
+      body.style.background = 'linear-gradient(to bottom right, #757f9a, #d7dde8)';
       break;
     default:
-      body.style.background = 'linear-gradient(to bottom right, #0f172a, #1e293b, #111827)'; // default dark
+      body.style.background = 'linear-gradient(to bottom right, #0f172a, #1e293b, #111827)';
+      break;
   }
 }
+
+document.getElementById('cityInput').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    getWeatherByCity();
+  }
+});
+
+document.getElementById('searchBtn').addEventListener('click', getWeatherByCity);
+
+// On load, try geolocation:
+window.onload = () => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      async position => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
+        const data = await res.json();
+        updateWeatherUI(data);
+        await fetchForecast(lat, lon);
+        await fetchAirQuality(lat, lon);
+      },
+      () => alert('Geolocation permission denied. Please search city manually.')
+    );
+  }
+};

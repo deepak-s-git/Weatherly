@@ -34,8 +34,8 @@
 ### 1. Clone the Repository
 
 ```bash
-git clone
-cd 
+git clone  https://github.com/deepak-s-git/Weatherly.git
+cd Weatherly
 ```
 
 ### 2. Add Your API Key

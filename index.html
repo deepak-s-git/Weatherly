@@ -1,57 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Real-Time Weather App</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weather Luxe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+      transition: background 0.5s ease-in-out;
+      background: linear-gradient(to bottom right, #0f172a, #1e293b, #111827);
+    }
+
+    .glass {
+      background: rgba(255 255 255 / 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 30px rgba(0 0 0 / 0.1);
+      color: white;
+      transition: background 0.5s ease-in-out;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <div id="weatherBg">
-    <div class="container">
-      <input type="text" id="cityInput" placeholder="Enter city" />
-      <button onclick="getWeatherByCity()">Search</button>
+  <div class="max-w-3xl mx-auto p-6">
+    <div class="text-center mb-6">
+      <h1 class="text-3xl font-semibold">Weatherly</h1>
+      <p class="text-sm text-slate-400">Real-Time Forecast</p>
+    </div>
 
-      <div class="current-weather">
-        <h1 id="cityName"></h1>
-        <h2 id="temperature"></h2>
-        <p id="condition"></p>
-        <p id="feelsLike"></p>
-        <p id="highLow"></p>
-      </div>
+    <!-- Search Box -->
+    <div class="flex items-center gap-2 mb-6">
+      <input id="cityInput" type="text" placeholder="Enter city..."
+        class="flex-1 p-3 rounded-xl bg-slate-800 text-white placeholder-slate-400" />
+      <button onclick="getWeatherByCity()"
+        class="bg-indigo-600 px-4 py-3 rounded-xl font-medium hover:bg-indigo-700">Search</button>
+    </div>
 
-      <div class="details-panel">
-        <p><strong>Humidity:</strong> <span id="humidity"></span></p>
-        <p><strong>Wind:</strong> <span id="wind"></span></p>
-        <p><strong>Visibility:</strong> <span id="visibility"></span></p>
-        <p><strong>Pressure:</strong> <span id="pressure"></span></p>
-      </div>
+    <!-- Current Weather Card -->
+    <div id="currentWeather" class="glass p-6 rounded-2xl mb-6 text-center opacity-0">
+      <h2 id="cityName" class="text-2xl font-semibold mb-1"></h2>
+      <div id="temperature" class="text-5xl font-bold"></div>
+      <div id="condition" class="text-md text-slate-300 capitalize"></div>
+      <p id="feelsLike" class="text-sm mt-2"></p>
+      <p id="highLow" class="text-sm"></p>
+    </div>
 
-      <div class="forecast-section">
-        <h3>Hourly Forecast</h3>
-        <div id="hourlyForecast" class="forecast-scroll"></div>
+    <!-- Details Panel -->
+    <div
+      class="glass p-4 rounded-xl mb-6 grid grid-cols-2 gap-4 text-sm text-white bg-white/10 border border-white/20">
+      <div><strong>Humidity:</strong> <span id="humidity"></span></div>
+      <div><strong>Wind:</strong> <span id="wind"></span></div>
+      <div><strong>Visibility:</strong> <span id="visibility"></span></div>
+      <div><strong>Pressure:</strong> <span id="pressure"></span></div>
+    </div>
 
-        <h3>Weekly Forecast</h3>
-        <div id="weeklyForecast" class="forecast-scroll-vertical"></div>
-      </div>
+    <!-- AQI -->
+    <div id="airQuality" class="glass p-6 rounded-xl text-white">
+      <h3 class="text-xl font-semibold mb-3">Air Quality Index (AQI):</h3>
+      <p><span id="aqi" class="font-bold text-lg">--</span></p>
+      <p>PM2.5: <span id="pm25">--</span></p>
+      <p>PM10: <span id="pm10">--</span></p>
+      <p>CO: <span id="co">--</span></p>
+      <p>SO2: <span id="so2">--</span></p>
+    </div>
 
-      <div class="air-quality">
-        <h3>Air Quality</h3>
-        <p><strong>AQI:</strong> <span id="aqi"></span></p>
-        <p><strong>PM2.5:</strong> <span id="pm25"></span></p>
-        <p><strong>PM10:</strong> <span id="pm10"></span></p>
-        <p><strong>CO:</strong> <span id="co"></span></p>
-        <p><strong>SO2:</strong> <span id="so2"></span></p>
-      </div>
 
-      <div class="sunrise-sunset">
-        <h3>Sunrise & Sunset</h3>
-        <p><strong>Sunrise:</strong> <span id="sunrise"></span></p>
-        <p><strong>Sunset:</strong> <span id="sunset"></span></p>
-      </div>
+    <!-- Sunrise & Sunset -->
+    <div class="glass p-4 rounded-xl text-sm text-white bg-white/10 border border-white/20">
+      <h3 class="font-semibold mb-2">Sunrise & Sunset</h3>
+      <p><strong>Sunrise:</strong> <span id="sunrise"></span></p>
+      <p><strong>Sunset:</strong> <span id="sunset"></span></p>
     </div>
   </div>
 
   <script src="script.js"></script>
 </body>
+
 </html>

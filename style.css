@@ -78,3 +78,16 @@ button {
   border-radius: 10px;
   text-align: center;
 }
+
+/* Smooth scaling & shadow on hover for forecast cards */
+#hourlyForecast > div,
+#weeklyForecast > div {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#hourlyForecast > div:hover,
+#weeklyForecast > div:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 16px rgba(255 255 255 / 0.3);
+  cursor: pointer;
+}
