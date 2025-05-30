@@ -1,99 +1,214 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Weather Luxe</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Outfit', sans-serif;
-      transition: background 0.5s ease-in-out;
-      background: linear-gradient(to bottom right, #0f172a, #1e293b, #111827);
-    }
-
-    .glass {
-      background: rgba(255 255 255 / 0.1);
-      border-radius: 1rem;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 4px 30px rgba(0 0 0 / 0.1);
-      color: white;
-      transition: background 0.5s ease-in-out;
-    }
-
-    .fade-in {
-      animation: fadeIn 0.5s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      0% {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weatherly - Real Time Forecast</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for weather icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
-  <div class="max-w-3xl mx-auto p-6">
-    <div class="text-center mb-6">
-      <h1 class="text-3xl font-semibold">Weatherly</h1>
-      <p class="text-sm text-slate-400">Real-Time Forecast</p>
+    <div class="app-container">
+        <!-- Dynamic background container that changes based on weather -->
+        <div class="weather-background" id="weatherBackground"></div>
+        
+        <!-- App title and subtitle -->
+        <div class="app-title-container">
+            <h1 class="app-title">Weatherly</h1>
+            <p class="app-subtitle">Real Time Forecast</p>
+        </div>
+        
+        <!-- Location search and control section -->
+        <header class="location-control">
+            <div class="search-container">
+                <input type="text" id="locationSearch" placeholder="Search for a city...">
+                <button id="searchBtn"><i class="fas fa-search"></i></button>
+            </div>
+            <button id="geolocateBtn" class="geolocation-btn" title="Use current location">
+                <i class="fas fa-location-arrow"></i>
+            </button>
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle dark/light mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
+
+        <main class="weather-content">
+            <!-- Current weather display section -->
+            <section class="current-weather">
+                <h2 class="location-name" id="locationName">Loading...</h2>
+                <div class="current-temp-container">
+                    <div class="temp-main">
+                        <span id="currentTemp">--</span>
+                        <span class="temp-unit">°C</span>
+                    </div>
+                    <div class="temp-details">
+                        <div class="weather-condition" id="weatherCondition">--</div>
+                        <div class="feels-like">Feels like <span id="feelsLike">--</span>°C</div>
+                        <div class="high-low">
+                            <span id="tempLow">--</span> ~ <span id="tempHigh">--</span>°C
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Hourly forecast section with horizontal scroll -->
+            <section class="hourly-forecast-section">
+                <h2>3-Hour Forecast</h2>
+                <div class="hourly-scroll-container">
+                    <div class="hourly-forecast" id="hourlyForecast">
+                        <!-- Hourly forecast items will be inserted here by JavaScript -->
+                        <!-- Template for a single hour forecast -->
+                        <div class="hour-item template">
+                            <div class="hour-time">--</div>
+                            <div class="hour-icon"><i class="fas fa-cloud"></i></div>
+                            <div class="hour-temp">--°C</div>
+                            <div class="hour-wind">
+                                <i class="fas fa-wind"></i>
+                                <span>Force --</span>
+                            </div>
+                            <div class="hour-uv">
+                                <span>UV: --</span>
+                                <div class="uv-indicator"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Trend line for temperature will be drawn with SVG or Canvas via JavaScript -->
+                    <div class="temp-trend-container" id="tempTrendContainer"></div>
+                </div>
+            </section>
+
+            <!-- Weekly forecast section -->
+            <section class="weekly-forecast-section">
+                <h2>5-Day Forecast</h2>
+                <div class="weekly-forecast" id="weeklyForecast">
+                    <!-- Weekly forecast items will be inserted here by JavaScript -->
+                    <!-- Template for a single day forecast -->
+                    <div class="day-item template">
+                        <div class="day-name">--</div>
+                        <div class="day-date">--</div>
+                        <div class="day-icon"><i class="fas fa-sun"></i></div>
+                        <div class="day-temp">
+                            <span class="day-high">--°C</span>
+                            <span class="day-low">--°C</span>
+                        </div>
+                        <div class="day-rain-chance">
+                            <i class="fas fa-tint"></i>
+                            <span>--%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Weather details panel -->
+            <section class="weather-details-section">
+                <h2>Weather Details</h2>
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-temperature-low"></i></div>
+                        <div class="detail-name">Feels Like</div>
+                        <div class="detail-value" id="detailFeelsLike">--°C</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-wind"></i></div>
+                        <div class="detail-name">Wind</div>
+                        <div class="detail-value" id="detailWind">-- --</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-tint"></i></div>
+                        <div class="detail-name">Humidity</div>
+                        <div class="detail-value" id="detailHumidity">--%</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-sun"></i></div>
+                        <div class="detail-name">UV Index</div>
+                        <div class="detail-value" id="detailUV">--</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-eye"></i></div>
+                        <div class="detail-name">Visibility</div>
+                        <div class="detail-value" id="detailVisibility">-- km</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-compress-alt"></i></div>
+                        <div class="detail-name">Pressure</div>
+                        <div class="detail-value" id="detailPressure">-- hPa</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Air quality information section -->
+            <section class="air-quality-section">
+                <h2>Air Quality</h2>
+                <div class="aqi-main">
+                    <div class="aqi-index">
+                        <div class="aqi-value" id="aqiValue">--</div>
+                        <div class="aqi-label" id="aqiLabel">--</div>
+                    </div>
+                    <div class="aqi-scale">
+                        <div class="scale-item" data-level="good"></div>
+                        <div class="scale-item" data-level="moderate"></div>
+                        <div class="scale-item" data-level="unhealthy-sensitive"></div>
+                        <div class="scale-item" data-level="unhealthy"></div>
+                        <div class="scale-item" data-level="very-unhealthy"></div>
+                        <div class="scale-item" data-level="hazardous"></div>
+                    </div>
+                </div>
+                <div class="pollutants-grid">
+                    <div class="pollutant-item">
+                        <div class="pollutant-name">PM2.5</div>
+                        <div class="pollutant-value" id="pm25Value">--</div>
+                    </div>
+                    <div class="pollutant-item">
+                        <div class="pollutant-name">PM10</div>
+                        <div class="pollutant-value" id="pm10Value">--</div>
+                    </div>
+                    <div class="pollutant-item">
+                        <div class="pollutant-name">O3</div>
+                        <div class="pollutant-value" id="o3Value">--</div>
+                    </div>
+                    <div class="pollutant-item">
+                        <div class="pollutant-name">NO2</div>
+                        <div class="pollutant-value" id="no2Value">--</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sunrise and sunset timeline section -->
+            <section class="sun-timeline-section">
+                <h2>Sunrise & Sunset</h2>
+                <div class="sun-arc-container">
+                    <div class="sun-arc" id="sunArc">
+                        <!-- Sun arc will be drawn with SVG via JavaScript -->
+                        <svg id="sunArcSvg" viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet">
+                            <path id="arcPath" d="M 10,100 Q 100,10 190,100" fill="none" stroke="#FFD700" stroke-width="2" />
+                            <circle id="sunPosition" cx="100" cy="100" r="5" fill="#FFD700" />
+                        </svg>
+                    </div>
+                    <div class="sun-times">
+                        <div class="sunrise">
+                            <i class="fas fa-sunrise"></i>
+                            <span id="sunriseTime">--:--</span>
+                        </div>
+                        <div class="sunset">
+                            <i class="fas fa-sunset"></i>
+                            <span id="sunsetTime">--:--</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>Weather data by <a href="https://openweathermap.org/" target="_blank">OpenWeatherMap</a> | Air Quality data by <a href="https://aqicn.org/" target="_blank">WAQI</a></p>
+        </footer>
     </div>
 
-    <!-- Search Box -->
-    <div class="flex items-center gap-2 mb-6">
-      <input id="cityInput" type="text" placeholder="Enter city..."
-        class="flex-1 p-3 rounded-xl bg-slate-800 text-white placeholder-slate-400" />
-      <button onclick="getWeatherByCity()"
-        class="bg-indigo-600 px-4 py-3 rounded-xl font-medium hover:bg-indigo-700">Search</button>
-    </div>
-
-    <!-- Current Weather Card -->
-    <div id="currentWeather" class="glass p-6 rounded-2xl mb-6 text-center opacity-0">
-      <h2 id="cityName" class="text-2xl font-semibold mb-1"></h2>
-      <div id="temperature" class="text-5xl font-bold"></div>
-      <div id="condition" class="text-md text-slate-300 capitalize"></div>
-      <p id="feelsLike" class="text-sm mt-2"></p>
-      <p id="highLow" class="text-sm"></p>
-    </div>
-
-    <!-- Details Panel -->
-    <div
-      class="glass p-4 rounded-xl mb-6 grid grid-cols-2 gap-4 text-sm text-white bg-white/10 border border-white/20">
-      <div><strong>Humidity:</strong> <span id="humidity"></span></div>
-      <div><strong>Wind:</strong> <span id="wind"></span></div>
-      <div><strong>Visibility:</strong> <span id="visibility"></span></div>
-      <div><strong>Pressure:</strong> <span id="pressure"></span></div>
-    </div>
-
-    <!-- AQI -->
-    <div id="airQuality" class="glass p-6 rounded-xl text-white">
-      <h3 class="text-xl font-semibold mb-3">Air Quality Index (AQI):</h3>
-      <p><span id="aqi" class="font-bold text-lg">--</span></p>
-      <p>PM2.5: <span id="pm25">--</span></p>
-      <p>PM10: <span id="pm10">--</span></p>
-      <p>CO: <span id="co">--</span></p>
-      <p>SO2: <span id="so2">--</span></p>
-    </div>
-
-
-    <!-- Sunrise & Sunset -->
-    <div class="glass p-4 rounded-xl text-sm text-white bg-white/10 border border-white/20">
-      <h3 class="font-semibold mb-2">Sunrise & Sunset</h3>
-      <p><strong>Sunrise:</strong> <span id="sunrise"></span></p>
-      <p><strong>Sunset:</strong> <span id="sunset"></span></p>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+    <!-- JavaScript -->
+    <script src="script.js"></script>
 </body>
-
 </html>
