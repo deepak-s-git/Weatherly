@@ -1,78 +1,66 @@
-# 🌤️ Weatherly
+# Weatherly 🌦️
 
-**Weatherly** is a beautiful and responsive weather app that shows real-time weather information, forecasts, air quality, and sunrise/sunset times. It leverages the OpenWeatherMap API and the browser's geolocation to fetch accurate, location-specific data with a sleek UI.
+**Weatherly** is a real-time, responsive weather forecast web app built with HTML, CSS, and JavaScript. It offers an intuitive and visually engaging interface for users to get up-to-date weather information, air quality indices, sunrise/sunset times, and more — all powered by **OpenWeatherMap** and **WAQI** APIs.
 
----
+## 🌟 Features
 
-## 🚀 Features
-
-- 📍 **Geolocation Support** – Fetches current location weather.
-- 🔍 **City Search** – Search weather details by city name.
-- 🌡️ **Current Conditions** – Temperature, humidity, pressure, wind, and visibility.
-- 🕐 **12-Hour Forecast** – Hour-by-hour temperature and weather icons.
-- 📅 **7-Day Forecast** – Daily weather conditions with icons.
-- ☁️ **Air Quality Index (AQI)** – Shows PM2.5, PM10, CO, SO₂ with quality status.
-- 🌅 **Sunrise & Sunset Times**
-- 🎨 **Dynamic Backgrounds** – Weather-based theme changes.
-- 💎 **Glassmorphism Design** – Modern, clean, and visually appealing.
-- 📱 **Responsive Design** – Mobile-friendly layout.
-
----
+- 🔍 Search for any city and get instant weather updates
+- 📍 Use geolocation to fetch weather for your current location
+- 🌤️ Dynamic backgrounds that reflect current weather conditions
+- 🌙 Toggle between dark and light themes
+- 🌡️ Current temperature, high/low, and "feels like"
+- 🕒 3-hour interval hourly forecast with wind and UV data
+- 📆 5-day extended forecast
+- 📊 Weather details (wind, pressure, humidity, UV index, etc.)
+- 🧪 Real-time air quality index with pollutants data
+- 🌅 Interactive sunrise and sunset timeline
 
 ## 🛠️ Technologies Used
 
-- **HTML5**
-- **CSS3 (Tailwind CSS)**
-- **Vanilla JavaScript**
-- **OpenWeatherMap API**
-- **Google Fonts (Outfit)**
+- HTML5
+- CSS3 (with custom styling)
+- JavaScript (DOM manipulation & API integration)
+- Font Awesome (for weather and UI icons)
+- Google Fonts (`Montserrat`)
+- OpenWeatherMap API
+- WAQI (World Air Quality Index) API
 
----
+## 📦 Setup Instructions
 
-## 📦 Getting Started
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/deepak-s-git/Weatherly.git
+   cd weatherly
+   ```
 
-### 1. Clone the Repository
+2. Open the `index.html` file in a browser or use Live Server (VS Code).
 
-```bash
-git clone  https://github.com/deepak-s-git/Weatherly.git
-cd Weatherly
-```
+3. Make sure to add your **API keys** for:
+   - `OpenWeatherMap` → https://openweathermap.org/api
+   - `WAQI` → https://aqicn.org/data-platform/token/
 
-### 2. Add Your API Key
+4. Insert your API keys into the appropriate section in `script.js`:
+   ```js
+   const WEATHER_API_KEY = "YOUR_OPENWEATHERMAP_API_KEY";
+   const AQI_API_KEY = "YOUR_WAQI_API_KEY";
+   ```
 
-Replace the placeholder in `script.js` with your OpenWeatherMap API key:
-
-```javascript
-const apiKey = 'YOUR_API_KEY_HERE';
-```
-
-Get your key from [https://openweathermap.org/api].
-
-### 3. Open the App
-
-Just open the `index.html` file in your browser.
-
----
-
-## 📁 Project Structure
+## 📂 File Structure
 
 ```
-weather-luxe/
+weatherly/
 ├── index.html
 ├── style.css
 ├── script.js
-├── README.md
+└── README.md
 ```
 
----
+## ✨ Future Enhancements
 
-## ✅ To-Do
-
-- [ ] Add dark/light mode toggle
-- [ ] Improve mobile optimization
-- [ ] Add autocomplete for city search
-
----
+- Add multi-language support
+- Save favorite cities
+- Offline caching with service workers
+- Animated weather icons
 
 ## 🙏 Acknowledgments
 
