@@ -1,6 +1,6 @@
 // Constants and configuration
-const WEATHER_API_KEY = 'ebbec3fe6c8aba81ed0b421a0bafc1ab'; // User needs to replace this with their API key
-const WAQI_API_KEY = '5c3f662639fa20c4c994ae426a0d32a280b2f912'; // User needs to replace this with their WAQI token
+const WEATHER_API_KEY = 'YOUR_OPENWEATHERMAP_API_KEY'; // User needs to replace this with their API key
+const WAQI_API_KEY = 'YOUR_WAQI_API_KEY'; // User needs to replace this with their WAQI token
 
 // API URLs
 const WEATHER_API_BASE_URL = 'https://api.openweathermap.org/data/2.5';
